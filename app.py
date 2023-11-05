@@ -12,6 +12,7 @@ from flask import Flask, request, Response, jsonify
 # MODEL FRAMEWORK
 import torch 
 import tensorflow as tf
+from tensorflow import keras
 from handler import SimpleModel
 
 
@@ -24,7 +25,7 @@ if len(GPUS) > 0:
 
 torch_arch = SimpleModel(5, 32, 1)
 # load CV models
-TF_MODEL = tf.keras.models.load_model(config.TF_MODEL_PATH)
+TF_MODEL =  keras.models.load_model(config.TF_MODEL_PATH)
 TORCH_MODEL = torch.load(config.TORCH_MODEL_PATH)
 TORCH_MODEL.eval()
 

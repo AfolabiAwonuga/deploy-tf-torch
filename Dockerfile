@@ -1,8 +1,8 @@
-FROM nvcr.io/nvidia/tensorflow:21.06-tf2-py3
+FROM python:3.9
 
 # required for PDF2Image package
-RUN apt-get update
-RUN apt-get -y install poppler-utils
+# RUN apt-get update
+# RUN apt-get -y install poppler-utils
 
 WORKDIR /app
 COPY requirements.txt ./requirements.txt
