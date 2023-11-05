@@ -24,6 +24,18 @@ jobs:
       #      --project=$PROJECT_ID \
       #      --region=$REGION \
       #      --display-name=$ENDPOINT_NAME
+
+      # Authenticates google cloud
+      - name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          service_account: "for-vertex@consult-403720.iam.gserviceaccount.com"
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
+      # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`
+      # This step allows me to then run gsutil commands
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        
       
       - name: Upload model to Vertex AI model registry
         run: |
