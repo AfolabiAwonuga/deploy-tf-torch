@@ -20,11 +20,11 @@ jobs:
     steps:
       only need to run this section once - more endpoints are created when you run this
       - name: Create Vertex AI endpoint
-       run: |
-         gcloud ai endpoints create \
-           --project=$PROJECT_ID \
-           --region=$REGION \
-           --display-name=$ENDPOINT_NAME
+        run: |
+          gcloud ai endpoints create \
+            --project=$PROJECT_ID \
+            --region=$REGION \
+            --display-name=$ENDPOINT_NAME
 
       # Authenticates google cloud
       - name: "Authenticate to Google Cloud"
