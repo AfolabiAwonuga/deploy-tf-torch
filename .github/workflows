@@ -1,7 +1,12 @@
 name: Actions test for tf-torch gcp deployment
+
 on:
-  push
+  push:
+    branches:
+        - main
+
 jobs:
+
   deploy-to-vertex-ai-endpoint:
     runs-on: ubuntu-latest
     env:
@@ -11,6 +16,7 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
       ENDPOINT_NAME: tf-torch
       MODEL_NAME: tf-torch
+      
     steps:
       # Copies repo code to workspace
       - name: Check out repository code
