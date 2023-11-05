@@ -1,0 +1,53 @@
+name: Actions test for tf-torch gcp deployment
+
+on:
+  push:
+    branches:
+        - main      
+
+jobs:
+  deploy-to-vertex-ai-endpoint:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: consult-403720
+      REGION: europe-west1
+      IMAGE_NAME: tf-torch
+      IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
+      ENDPOINT_NAME: tf-torch
+      MODEL_NAME: tf-torch
+
+    steps:
+      # only need to run this section once - more endpoints are created when you run this
+      # - name: Create Vertex AI endpoint
+      #  run: |
+      #    gcloud ai endpoints create \
+      #      --project=$PROJECT_ID \
+      #      --region=$REGION \
+      #      --display-name=$ENDPOINT_NAME
+      
+      - name: Upload model to Vertex AI model registry
+        run: |
+          MODEL_ID=$(gcloud ai models list --region=$REGION --filter="DISPLAY_NAME:$MODEL_NAME" | grep -oE '\b[0-9]{19}\b')
+          gcloud ai models upload \
+            --project=$PROJECT_ID \
+            --region=$REGION \
+            --container-image-uri=gcr.io/$PROJECT_ID/$IMAGE_NAME:$IMAGE_TAG \
+            --display-name=$MODEL_NAME \
+            --parent-model=projects/$PROJECT_ID/locations/$REGION/models/$MODEL_ID \
+            --container-predict-route=/predict \
+            --container-health-route=/health
+      
+      # Use grep to get the model ID of the latest deployed model in AI registry
+      - name: Deploy to Vertex AI endpoint
+        run: |
+          MODEL_ID=$(gcloud ai models list --region=$REGION --filter="DISPLAY_NAME:$MODEL_NAME" | grep -oE '\b[0-9]{19}\b')
+          MODEL_VERSION_ID=$(gcloud ai models list-version $MODEL_ID --region=$REGION --sort-by=VERSION_ID | tail -1 | grep -oE '\b[0-9]{19}@[0-9]+\b')
+          ENDPOINT_ID=$(gcloud ai endpoints list --region=$REGION --filter="DISPLAY_NAME:$ENDPOINT_NAME" | grep -oE '\b[0-9]{19}\b')
+          gcloud ai endpoints deploy-model $ENDPOINT_ID \
+            --project=$PROJECT_ID \
+            --region=$REGION \
+            --model=$MODEL_VERSION_ID \
+            --display-name=$MODEL_NAME \
+            --machine-type=n1-standard-4 \
+            --traffic-split=0=100 
+        #--accelerator=count=1,type=nvidia-tesla-t4
