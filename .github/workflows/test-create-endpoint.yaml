@@ -17,13 +17,13 @@ jobs:
       MODEL_NAME: tf-torch
 
     steps:
-      # only need to run this section once - more endpoints are created when you run this
-      # - name: Create Vertex AI endpoint
-      #  run: |
-      #    gcloud ai endpoints create \
-      #      --project=$PROJECT_ID \
-      #      --region=$REGION \
-      #      --display-name=$ENDPOINT_NAME
+      only need to run this section once - more endpoints are created when you run this
+      - name: Create Vertex AI endpoint
+       run: |
+         gcloud ai endpoints create \
+           --project=$PROJECT_ID \
+           --region=$REGION \
+           --display-name=$ENDPOINT_NAME
 
       # Authenticates google cloud
       - name: "Authenticate to Google Cloud"
@@ -35,7 +35,7 @@ jobs:
       # This step allows me to then run gsutil commands
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-        
+
       
       - name: Upload model to Vertex AI model registry
         run: |
