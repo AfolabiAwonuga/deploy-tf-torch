@@ -39,20 +39,21 @@ jobs:
       #       --display-name=$ENDPOINT_NAME
 
       
-      - name: Upload model to Vertex AI model registry
-        run: |
-          gcloud ai models upload \
-            --project=$PROJECT_ID \
-            --region=$REGION \
-            --container-image-uri=gcr.io/$PROJECT_ID/$IMAGE_NAME:$IMAGE_TAG \
-            --display-name=$MODEL_NAME \
-            --container-predict-route=/predict \
-            --container-health-route=/health
+      # - name: Upload model to Vertex AI model registry
+      #   run: |
+      #     gcloud ai models upload \
+      #       --project=$PROJECT_ID \
+      #       --region=$REGION \
+      #       --container-image-uri=gcr.io/$PROJECT_ID/$IMAGE_NAME:$IMAGE_TAG \
+      #       --display-name=$MODEL_NAME \
+      #       --container-predict-route=/predict \
+      #       --container-health-route=/health
       
       # Use grep to get the model ID of the latest deployed model in AI registry
       - name: Deploy to Vertex AI endpoint
         run: |
           MODEL_ID=$(gcloud ai models list --region=$REGION --filter="DISPLAY_NAME:$MODEL_NAME" | grep -oE '\b[0-9]{19}\b' | head -1)
+          MODEL_VERSION_ID=$(gcloud ai models list-version $MODEL_ID --region=$REGION --sort-by=VERSION_ID | tail -1 | grep -oE '\b[0-9]{19}@[0-9]+\b')
           ENDPOINT_ID=$(gcloud ai endpoints list --region=$REGION --filter="DISPLAY_NAME:$ENDPOINT_NAME" | grep -oE '\b[0-9]{19}\b' | head -1)
           gcloud ai endpoints deploy-model $ENDPOINT_ID \
             --project=$PROJECT_ID \
