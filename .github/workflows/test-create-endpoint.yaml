@@ -18,7 +18,7 @@ jobs:
       MODEL_NAME: tf-torch
 
     steps:
-      only need to run this section once - more endpoints are created when you run this
+      # only need to run this section once - more endpoints are created when you run this
       - name: Create Vertex AI endpoint
         run: |
           gcloud ai endpoints create \
